@@ -32,9 +32,9 @@ const CubeFaces = () => {
   };
 
   return (
-    <div className="min-h-screen flex font-[Oswald]">
+    <div className="h-auto flex font-[Oswald]">
       {/* Color Picker - Sticky to left, with fixed width */}
-      <div className="sticky top-0 h-screen p-4 text-white flex flex-col w-1/8">
+      <div className="sticky top-0 h-auto p-4 text-white flex flex-col w-1/8">
         <div className="flex flex-col space-y-2">
           {/* Color buttons with border indicating the selected color */}
           <button
@@ -86,26 +86,35 @@ const CubeFaces = () => {
         </div>
       </div>
 
-      {/* Rubik's Cube - takes remaining space */}
-      <div className="flex-grow p-11 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {faces.map((face, faceIndex) => (
-          <div key={faceIndex} className="flex flex-col items-center">
-            {/* The 3x3 grid for Rubik's cube face */}
-            <div className="grid grid-cols-3 gap-1 w-[210px] h-[210px] bg-gray-800">
-              {colors[faceIndex].map((color, squareIndex) => (
-                <div
-                  key={squareIndex}
-                  onClick={() => handleSquareClick(faceIndex, squareIndex)}
-                  className={`w-[68px] h-[68px] border rounded-md border-gray-500 cursor-pointer ${
-                    color ? color : "bg-gray-600"
-                  }`}
-                ></div>
-              ))}
+      {/* Rubik's Cube Faces and Solve Button */}
+      <div className="flex-grow flex-col items-center justify-center h-auto">
+        <div className="flex-grow p-11 pt-5 pb-2 gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {faces.map((face, faceIndex) => (
+            <div key={faceIndex} className="flex flex-col items-center">
+              {/* The 3x3 grid for Rubik's cube face */}
+              <div className="grid grid-cols-3 gap-1 w-[180px] h-[180px] bg-gray-800">
+                {colors[faceIndex].map((color, squareIndex) => (
+                  <div
+                    key={squareIndex}
+                    onClick={() => handleSquareClick(faceIndex, squareIndex)}
+                    className={`w-[58px] h-[58px] border rounded-md border-gray-500 cursor-pointer ${
+                      color ? color : "bg-gray-600"
+                    }`}
+                  ></div>
+                ))}
+              </div>
+              {/* Label below each square */}
+              <div className="text-white mt-2 lg:mb-6">{face}</div>
             </div>
-            {/* Label below each square */}
-            <div className="text-white mt-2">{face}</div>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        {/*Solve Button below the cubes*/}
+        <div className="relative flex justify-center items-center m-8 mt-8">
+          <button className="bg-red-600 text-yellow-100 h-11 w-[100px] rounded-lg">
+            Solve
+          </button>
+        </div>
       </div>
     </div>
   );
