@@ -3,16 +3,46 @@ import { ImBin } from "react-icons/im";
 
 const CubeFaces = () => {
   const faces = ["Front", "Top", "Right", "Left", "Down", "Back"];
+  const defaultColors = [
+    "bg-green-500",
+    "bg-white",
+    "bg-red-500",
+    "bg-orange-500",
+    "bg-yellow-500",
+    "bg-blue-500",
+  ];
+  const faceIds = ["f", "u", "r", "l", "d", "b"];
+
   const [selectedColor, setSelectedColor] = useState(null);
   const [colors, setColors] = useState(
-    Array(6).fill(Array(9).fill(null)) // 6 faces, each with 9 sub-squares
+    Array(6)
+      .fill(null)
+      .map((_, faceIndex) =>
+        Array(9)
+          .fill(null)
+          .map((_, idx) => (idx === 4 ? defaultColors[faceIndex] : null))
+      )
   );
+
+  const [colorCounts, setColorCounts] = useState({
+    "bg-green-500": 1,
+    "bg-white": 1,
+    "bg-red-500": 1,
+    "bg-orange-500": 1,
+    "bg-yellow-500": 1,
+    "bg-blue-500": 1,
+  });
 
   const handleColorPick = (color) => {
     setSelectedColor(color);
   };
 
   const handleSquareClick = (faceIndex, squareIndex) => {
+    if (squareIndex === 4) return; // Prevent changing the center box color.
+
+    const currentColor = colors[faceIndex][squareIndex];
+    if (currentColor === selectedColor) return; // Avoid redundant updates.
+
     const newColors = colors.map((face, idx) => {
       if (idx === faceIndex) {
         return face.map((color, sIdx) => {
@@ -24,11 +54,32 @@ const CubeFaces = () => {
       }
       return face;
     });
+
+    const newCounts = { ...colorCounts };
+    if (currentColor) newCounts[currentColor] -= 1; // Decrement old color count.
+    if (selectedColor) newCounts[selectedColor] += 1; // Increment new color count.
+
+    // Validate color count.
+    if (selectedColor && newCounts[selectedColor] > 9) {
+      alert(
+        `Invalid configuration: You cannot use ${selectedColor.replace("bg-", "").replace("-500", "")} more than 8 times.`
+      );
+      return;
+    }
+
     setColors(newColors);
+    setColorCounts(newCounts);
   };
 
   const clearColors = () => {
     setSelectedColor(null);
+  };
+
+  const handleFetchIds = () => {
+    const divs = document.querySelectorAll("#smallBoxes > div");
+    const ids = Array.from(divs).map((div) => div.id);
+    console.log(ids);
+    console.log(colorCounts);
   };
 
   return (
@@ -37,42 +88,22 @@ const CubeFaces = () => {
       <div className="sticky top-0 h-auto p-4 text-white flex flex-col w-1/8">
         <div className="flex flex-col space-y-2">
           {/* Color buttons with border indicating the selected color */}
-          <button
-            className={`w-12 h-12 bg-red-500 ${
-              selectedColor === "bg-red-500" ? "border-4 border-white" : ""
-            }`}
-            onClick={() => handleColorPick("bg-red-500")}
-          />
-          <button
-            className={`w-12 h-12 bg-blue-500 ${
-              selectedColor === "bg-blue-500" ? "border-4 border-white" : ""
-            }`}
-            onClick={() => handleColorPick("bg-blue-500")}
-          />
-          <button
-            className={`w-12 h-12 bg-green-500 ${
-              selectedColor === "bg-green-500" ? "border-4 border-white" : ""
-            }`}
-            onClick={() => handleColorPick("bg-green-500")}
-          />
-          <button
-            className={`w-12 h-12 bg-yellow-500 ${
-              selectedColor === "bg-yellow-500" ? "border-4 border-white" : ""
-            }`}
-            onClick={() => handleColorPick("bg-yellow-500")}
-          />
-          <button
-            className={`w-12 h-12 bg-orange-500 ${
-              selectedColor === "bg-orange-500" ? "border-4 border-white" : ""
-            }`}
-            onClick={() => handleColorPick("bg-orange-500")}
-          />
-          <button
-            className={`w-12 h-12 bg-white border border-gray-400 ${
-              selectedColor === "bg-white" ? "border-4 border-white" : ""
-            }`}
-            onClick={() => handleColorPick("bg-white")}
-          />
+          {[
+            "bg-red-500",
+            "bg-blue-500",
+            "bg-green-500",
+            "bg-yellow-500",
+            "bg-orange-500",
+            "bg-white",
+          ].map((color) => (
+            <button
+              key={color}
+              className={`w-12 h-12 ${color} ${
+                selectedColor === color ? "border-4 border-white" : ""
+              }`}
+              onClick={() => handleColorPick(color)}
+            />
+          ))}
 
           {/* Clear Button */}
           <button
@@ -92,14 +123,18 @@ const CubeFaces = () => {
           {faces.map((face, faceIndex) => (
             <div key={faceIndex} className="flex flex-col items-center">
               {/* The 3x3 grid for Rubik's cube face */}
-              <div className="grid grid-cols-3 gap-1 w-[180px] h-[180px] bg-gray-800">
+              <div
+                id="smallBoxes"
+                className="grid grid-cols-3 gap-1 w-[180px] h-[180px] bg-gray-800"
+              >
                 {colors[faceIndex].map((color, squareIndex) => (
                   <div
                     key={squareIndex}
                     onClick={() => handleSquareClick(faceIndex, squareIndex)}
                     className={`w-[58px] h-[58px] border rounded-md border-gray-500 cursor-pointer ${
                       color ? color : "bg-gray-600"
-                    }`}
+                    } ${squareIndex === 4 ? "pointer-events-none" : ""}`} // Disable interaction for center box.
+                    id={`${squareIndex}${faceIds[faceIndex]}`}
                   ></div>
                 ))}
               </div>
@@ -110,8 +145,11 @@ const CubeFaces = () => {
         </div>
 
         {/*Solve Button below the cubes*/}
-        <div className="relative flex justify-center items-center m-8 mt-8">
-          <button className="bg-red-600 text-yellow-100 h-11 w-[100px] rounded-lg">
+        <div className="relative flex justify-center items-center mb-8 mt-8 pb-20">
+          <button
+            className="bg-red-600 text-yellow-100 h-11 w-[100px] rounded-lg"
+            onClick={handleFetchIds}
+          >
             Solve
           </button>
         </div>

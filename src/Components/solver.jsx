@@ -22,10 +22,10 @@ function Solver() {
 
   return (
     <>
-      <div className="relative w-full h-auto overflow-hidden bg-text">
+      <div className="solver-page relative w-full h-auto overflow-hidden bg-text">
         <div
           ref={bannerRefSolver}
-          className="text-yellow-50 flex justify-center text-[40px] sm:text-[50px] md:text-[60px] lg:text-[90px] font-[Oswald] whitespace-nowrap"
+          className="text-yellow-50 flex mb-6 justify-center text-[40px] sm:text-[50px] md:text-[60px] lg:text-[90px] font-[Oswald] whitespace-nowrap"
         >
           SOLVER SOLVER SOLVER SOLVER SOLVER SOLVER SOLVER SOLVER SOLVER SOLVER
           SOLVER SOLVER SOLVER SOLVER SOLVER SOLVER SOLVER SOLVER SOLVER
