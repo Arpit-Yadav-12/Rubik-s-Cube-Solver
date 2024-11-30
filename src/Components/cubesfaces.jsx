@@ -76,10 +76,35 @@ const CubeFaces = () => {
   };
 
   const handleFetchIds = () => {
-    const divs = document.querySelectorAll("#smallBoxes > div");
-    const ids = Array.from(divs).map((div) => div.id);
-    console.log(ids);
-    console.log(colorCounts);
+    // Calculate the total number of filled squares
+    const totalFilled = Object.values(colorCounts).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+
+    // Validate if all boxes are filled
+    if (totalFilled !== 54) {
+      alert(
+        `Please fill all the colors first. Currently filled: ${totalFilled}/54`
+      );
+      return;
+    }
+
+    // Map colors to face IDs
+    const colorToFaceId = {
+      "bg-green-500": "f",
+      "bg-white": "u",
+      "bg-red-500": "r",
+      "bg-orange-500": "l",
+      "bg-yellow-500": "d",
+      "bg-blue-500": "b",
+      null: "empty", // For empty squares
+    };
+
+    // Convert the colors state into face IDs
+    const filledFaceIds = colors.flat().map((color) => colorToFaceId[color]);
+
+    console.log(filledFaceIds);
   };
 
   return (
