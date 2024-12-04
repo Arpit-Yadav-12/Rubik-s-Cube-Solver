@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { ImBin } from "react-icons/im";
+import solver from "rubiks-cube-solver";
 
 const CubeFaces = () => {
-  const faces = ["Front", "Top", "Right", "Left", "Down", "Back"];
+  const faces = ["Front", "Right", "Top", "Down", "Left", "Back"];
   const defaultColors = [
-    "bg-green-500",
-    "bg-white",
-    "bg-red-500",
-    "bg-orange-500",
-    "bg-yellow-500",
-    "bg-blue-500",
+    "bg-green-500", // Front
+    "bg-red-500", // Right
+    "bg-white", // Top
+    "bg-yellow-500", // Down
+    "bg-orange-500", // Left
+    "bg-blue-500", // Back
   ];
-  const faceIds = ["f", "u", "r", "l", "d", "b"];
+  const faceIds = ["f", "r", "u", "d", "l", "b"];
 
   const [selectedColor, setSelectedColor] = useState(null);
   const [colors, setColors] = useState(
@@ -26,10 +27,10 @@ const CubeFaces = () => {
 
   const [colorCounts, setColorCounts] = useState({
     "bg-green-500": 1,
-    "bg-white": 1,
     "bg-red-500": 1,
-    "bg-orange-500": 1,
+    "bg-white": 1,
     "bg-yellow-500": 1,
+    "bg-orange-500": 1,
     "bg-blue-500": 1,
   });
 
@@ -93,18 +94,25 @@ const CubeFaces = () => {
     // Map colors to face IDs
     const colorToFaceId = {
       "bg-green-500": "f",
-      "bg-white": "u",
       "bg-red-500": "r",
-      "bg-orange-500": "l",
+      "bg-white": "u",
       "bg-yellow-500": "d",
+      "bg-orange-500": "l",
       "bg-blue-500": "b",
       null: "empty", // For empty squares
     };
 
-    // Convert the colors state into face IDs
-    const filledFaceIds = colors.flat().map((color) => colorToFaceId[color]);
-
+    // Convert the colors state into face IDs // this is the array of input faces which we need to provide to the
+    // solver function of the rubik-cube-solver library.
+    let filledFaceIds = colors
+      .flat()
+      .map((color) => colorToFaceId[color])
+      .join("");
     console.log(filledFaceIds);
+    console.log(typeof filledFaceIds);
+
+    let solveMoves = solver(filledFaceIds);
+    console.log(solveMoves);
   };
 
   return (
